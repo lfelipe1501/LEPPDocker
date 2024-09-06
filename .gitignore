@@ -1,6 +1,6 @@
-data/pg_data/**
-data/nginx/**
-data/nginx-ui/**
+data/pg_data/*
+data/nginx/*
+data/nginx-ui/*
 DELETE-ME
 
 # Log files
