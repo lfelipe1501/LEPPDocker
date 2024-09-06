@@ -47,7 +47,12 @@ You can also set the following environment variables, for example in the include
 |PG_PASS|The PostgreSQL root user password used when creating the db container.|
 |DATA_PATH_HOST|The path used when creating a db container to store the database data in a way accessible to the host server.|
 
-> *If it is run in a windows dockerized environment with WLS2, it is NOT recommended to run on the windows desktop or in your windows system example: `/mnt/c/Users/lfelipe/Desktop/LEPPDocker/`, the good way is copy or clone the project inside the linux wls2 system preferably in the `HOME` folder of your user, because windows has problems with the partitions mounted within the linux subsystem example: `/mnt/c/Users/lfelipe/Desktop` it is a bad path and can lead to problems with docker*
+> [!CAUTION]
+> _**For WSL users**: If it is run in a windows dockerized environment with WLS2,
+> it is NOT recommended to run on the windows desktop or in your windows system example: `/mnt/c/Users/lfelipe/Desktop/LEPPDocker/`,
+> the good way is copy or clone the project inside the linux wls2 system preferably in the `HOME` folder of your user,
+> because windows has problems with the partitions mounted within the linux subsystem example: `/mnt/c/Users/lfelipe/Desktop`
+> it is a bad path and can lead to problems with docker_
 
 ## Usage
 
@@ -60,11 +65,18 @@ Clone this repository with the following command:
 git clone https://github.com/lfelipe1501/LEPPDocker.git
 ```
 
-##### Start the server.
+#### Start the server.
 
-Start the server using the following command inside the directory you just cloned: `docker compose up -d`.
+> [!IMPORTANT]
+> _**For PostgreSQL CONTAINER**: **BEFORE** running the project you **MUST DELETE** the file
+> located in the folder: `data/pg_data/` to avoid problems with the container and data creation
+> and you MUST also **Remember** to edit the variables in the `.env` file
+> before starting the environment to adjust the formula to your preferences_
 
-*Remember to edit the variables in the `.env` file before starting the environment to adjust the formula to your preferences*
+Start the server using the following command inside the directory you just cloned:
+```console
+docker compose up -d
+```
 
 ## Restart the containers
 
@@ -93,9 +105,12 @@ Where `{CONTAINER_NAME}` is one of:
 
 > example: `docker exec -ti lfsys-pyth bash`
 
-##### Stop the server.
+#### Stop the server.
 
-Stop the server using the following command inside the directory you just cloned: `docker compose down`.
+Stop the server using the following command inside the directory you just cloned:
+```console
+docker compose down
+```
 
 ### Contact / Social Media
 
