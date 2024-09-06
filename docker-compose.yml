@@ -1,0 +1,95 @@
+networks:
+  netlfs:
+    name: netlfsys
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+
+services:
+  nginx:
+    #image: lfsys/nginx:latest
+    build:
+      context: .
+      args:
+        - "ARCH_TYPE=${ARCH_TYPE}"
+        - "TZ=${WORKSPACE_TIMEZONE}"
+      dockerfile: ./config/nginx/ngx.Dockerfile
+    container_name: ${APP_NAME:?err}-nginx
+    hostname: contnr_nginx
+    restart: "unless-stopped"
+    ports:
+      - "80:80"
+      - "443:443"
+      - ${NGXUI_PORT}:81
+      - ${PYAP_PORT}:8000
+      - ${PYAPSSL_PORT}:8001
+    networks:
+      netlfs:
+        ipv4_address: 10.10.0.101
+    links:
+      - python
+    environment:
+      - "TZ=${WORKSPACE_TIMEZONE}"
+      - "NGXUI=${NGXUI_PORT}"
+    volumes:
+      - ./app:/var/www/html
+      - ${DATA_PATH_HOST}/nginx-ui:/etc/nginx-ui
+      - ${DATA_PATH_HOST}/nginx:/etc/nginx
+    depends_on:
+      - python
+
+  python:
+    #image: lfsys/python:latest
+    build:
+      context: ./config/python
+      args:
+        - "TZ=${WORKSPACE_TIMEZONE}"
+      dockerfile: py.Dockerfile
+    container_name: ${APP_NAME:?err}-pyth
+    hostname: contnr_pyth
+    restart: "unless-stopped"
+    #ports:
+    #  - "8000:8000"
+    #  - "8001:8001"
+    networks:
+      netlfs:
+        ipv4_address: 10.10.0.102
+    environment:
+      - "TZ=${WORKSPACE_TIMEZONE}"
+      - "PG_DB=${PG_DB}"
+      - "PG_USER=${PG_USER}"
+      - "PG_PASS=${PG_PASS}"
+      - "DATABASE_URL=psql://${PG_USER}:${PG_PASS}@pgdb:5432/${PG_DB}"
+    volumes:
+      - ./app/pyapp:/app
+      - ./config/python/sites:/sites
+    depends_on:
+      - pgdb
+
+  pgdb:
+    image: postgres:latest
+    container_name: ${APP_NAME:?err}-pgdb
+    hostname: contnr_db
+    user: "${USR}:${GRP}"
+    restart: "unless-stopped"
+    ports:
+      - "5432:5432"
+    networks:
+      netlfs:
+        ipv4_address: 10.10.0.103
+    environment:
+      - "TZ=${WORKSPACE_TIMEZONE}"
+      - "POSTGRES_DB=${PG_DB}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASS}"
+    volumes:
+      - ${DATA_PATH_HOST}/pg_data:/var/lib/postgresql/data
+      ## Use this setting after you have launched the container for the first time, not before
+      #- ./config/pgsql/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
