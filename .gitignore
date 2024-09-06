@@ -20,7 +20,6 @@ Thumbs.db
 venv/
 .venv
 __pycache__/
-*.log
 *.sqlite3
 *.sqlite3-journal
 *.db
