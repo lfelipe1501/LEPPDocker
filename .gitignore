@@ -1,6 +1,6 @@
-data/mariadb/*
-data/nginx/*
-data/nginx-ui/*
+data/pg_data/**
+data/nginx/**
+data/nginx-ui/**
 
 
 # Log files
