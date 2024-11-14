@@ -41,14 +41,14 @@ services:
       - python
 
   python:
-    image: lfsys/python:latest
-    #build:
-    #  context: ./config/python
-    #  args:
-    #    - "TZ=${WORKSPACE_TIMEZONE}"
-    #    - "USR_ID=${USR}"
-    #    - "GRP_ID=${GRP}"
-    #  dockerfile: py.Dockerfile
+    #image: lfsys/python:latest
+    build:
+      context: ./config/python
+      args:
+        - "TZ=${WORKSPACE_TIMEZONE}"
+        - "USR_ID=${USR}"
+        - "GRP_ID=${GRP}"
+      dockerfile: py.Dockerfile
     container_name: ${APP_NAME:?err}-pyth
     hostname: contnr_pyth
     restart: "unless-stopped"
