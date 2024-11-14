@@ -1,21 +1,22 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 LABEL version="1.0" maintainer="Luis Felipe <lfelipe1501@gmail.com>"
 
 # Optional Configuration Parameter
-ARG TZ
-
-# Default Settings (for optional Parameter)
-ENV TZ ${TZ:-America/Bogota}
+ARG TZ\
+    USR_ID\
+    GRP_ID
 
 # Set Variables
 ENV CHARSET=UTF-8\
-    TZ=${TZ}
+    TZ=${TZ}\
+    USR_ID=${USR_ID}\
+    GRP_ID=${GRP_ID}
 
 # Create user to protect container
-RUN groupadd -g 1000 pyusr\
+RUN groupadd -g $GRP_ID pyusr\
     && useradd pyusr --shell /usr/sbin/nologin\
-    -u 1000 -g pyusr
+    -u $USR_ID -g pyusr
 
 # Init Python Configuration
 RUN mkdir /app && chmod 777 /app
@@ -29,14 +30,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y openssl\
     && apt-get autoremove --purge -y && apt-get autoclean -y && apt-get clean -y\
     && rm -rf /var/lib/apt/lists/*\
     && rm -rf /tmp/* /var/tmp/*\
-    && chown -R 1000:1000 /app\
-    && chown -R 1000:1000 /var/run\
+    && chown -R $USR_ID:$GRP_ID /app\
+    && chown -R $USR_ID:$GRP_ID /var/run\
     && chmod -R 777 /var/run\
-    && chown -R 1000:1000 /var/cache\
-    && chown 1000:1000 /etc/localtime\
-    && chown 1000:1000 /etc/timezone\
+    && chown -R $USR_ID:$GRP_ID /var/cache\
+    && chown $USR_ID:$GRP_ID /etc/localtime\
+    && chown $USR_ID:$GRP_ID /etc/timezone\
     && chmod 777 /entrypoint.sh\
-    && chown 1000:1000 /entrypoint.sh
+    && chown $USR_ID:$GRP_ID /entrypoint.sh
 
 USER pyusr
 WORKDIR /app
