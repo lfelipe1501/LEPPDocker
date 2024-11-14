@@ -20,13 +20,14 @@ else
     cd /app\
     && python3 -m venv venv\
     && . venv/bin/activate\
+    && echo ""\
     && pip install -r requirements.txt\
     && echo ""\
     && python manage.py migrate\
-    ; DJANGO_SUPERUSER_PASSWORD=admin python manage.py createsuperuser --username admin --email admin@admin.com --noinput\
     ; python manage.py collectstatic --noinput\
     ; echo ""\
-    && pip install uwsgi
+    && pip install uwsgi\
+    && echo ""
 fi
 
 cd /app && . venv/bin/activate\
