@@ -10,7 +10,7 @@ echo $TZ > /etc/timezone
 # Start Python
 set -e
 
-dir=/app/venv/lib/python3.12/site-packages
+dir=/app/venv/lib/python3.13/site-packages
 
 if [ -d $dir ]; then
 	echo ""
